@@ -1,0 +1,94 @@
+2026-11-25 01:32:32.014 +06 [15573] LOG:  starting PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-11-25 01:32:32.015 +06 [15573] LOG:  listening on IPv4 address "127.0.0.1", port 55432
+2026-11-25 01:32:32.017 +06 [15573] FATAL:  could not create lock file "/var/run/postgresql/.s.PGSQL.55432.lock": Permission denied
+2026-11-25 01:32:32.020 +06 [15573] LOG:  database system is shut down
+2026-11-25 01:33:11.496 +06 [15827] LOG:  starting PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-11-25 01:33:11.496 +06 [15827] LOG:  listening on IPv4 address "127.0.0.1", port 55432
+2026-11-25 01:33:11.499 +06 [15827] LOG:  listening on Unix socket "/home/md-arifuzzaman-akash/myDir/django/projects/pms/backend/pgdata/socket/.s.PGSQL.55432"
+2026-11-25 01:33:11.507 +06 [15830] LOG:  database system was shut down at 2026-11-25 01:32:17 +06
+2026-11-25 01:33:11.517 +06 [15827] LOG:  database system is ready to accept connections
+2026-11-25 01:33:22.243 +06 [15985] ERROR:  CREATE DATABASE cannot run inside a transaction block
+2026-11-25 01:33:22.243 +06 [15985] STATEMENT:  CREATE USER poms WITH PASSWORD 'jlJ8RdFbl4wMpnCmmQMfLkiQcugByFTj'; CREATE DATABASE poms OWNER poms; GRANT ALL PRIVILEGES ON DATABASE poms TO poms;
+2026-11-25 01:33:33.572 +06 [16079] ERROR:  role "poms" does not exist
+2026-11-25 01:33:33.572 +06 [16079] STATEMENT:  CREATE DATABASE poms OWNER poms;
+2026-11-25 01:33:42.952 +06 [16200] ERROR:  CREATE DATABASE cannot run inside a transaction block
+2026-11-25 01:33:42.952 +06 [16200] STATEMENT:  CREATE DATABASE poms OWNER poms; GRANT ALL PRIVILEGES ON DATABASE poms TO poms;
+2026-11-25 01:34:06.033 +06 [16500] ERROR:  permission denied to create database
+2026-11-25 01:34:06.033 +06 [16500] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.184 +06 [16501] ERROR:  permission denied to create database
+2026-11-25 01:34:06.184 +06 [16501] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.272 +06 [16502] ERROR:  permission denied to create database
+2026-11-25 01:34:06.272 +06 [16502] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.362 +06 [16503] ERROR:  permission denied to create database
+2026-11-25 01:34:06.362 +06 [16503] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.498 +06 [16504] ERROR:  permission denied to create database
+2026-11-25 01:34:06.498 +06 [16504] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.586 +06 [16505] ERROR:  permission denied to create database
+2026-11-25 01:34:06.586 +06 [16505] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.675 +06 [16506] ERROR:  permission denied to create database
+2026-11-25 01:34:06.675 +06 [16506] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.769 +06 [16507] ERROR:  permission denied to create database
+2026-11-25 01:34:06.769 +06 [16507] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.861 +06 [16508] ERROR:  permission denied to create database
+2026-11-25 01:34:06.861 +06 [16508] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:06.955 +06 [16509] ERROR:  permission denied to create database
+2026-11-25 01:34:06.955 +06 [16509] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.042 +06 [16510] ERROR:  permission denied to create database
+2026-11-25 01:34:07.042 +06 [16510] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.134 +06 [16511] ERROR:  permission denied to create database
+2026-11-25 01:34:07.134 +06 [16511] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.225 +06 [16512] ERROR:  permission denied to create database
+2026-11-25 01:34:07.225 +06 [16512] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.310 +06 [16513] ERROR:  permission denied to create database
+2026-11-25 01:34:07.310 +06 [16513] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.401 +06 [16514] ERROR:  permission denied to create database
+2026-11-25 01:34:07.401 +06 [16514] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.485 +06 [16515] ERROR:  permission denied to create database
+2026-11-25 01:34:07.485 +06 [16515] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.574 +06 [16516] ERROR:  permission denied to create database
+2026-11-25 01:34:07.574 +06 [16516] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.659 +06 [16517] ERROR:  permission denied to create database
+2026-11-25 01:34:07.659 +06 [16517] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.748 +06 [16518] ERROR:  permission denied to create database
+2026-11-25 01:34:07.748 +06 [16518] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.841 +06 [16519] ERROR:  permission denied to create database
+2026-11-25 01:34:07.841 +06 [16519] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:07.927 +06 [16520] ERROR:  permission denied to create database
+2026-11-25 01:34:07.927 +06 [16520] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.025 +06 [16521] ERROR:  permission denied to create database
+2026-11-25 01:34:08.025 +06 [16521] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.107 +06 [16522] ERROR:  permission denied to create database
+2026-11-25 01:34:08.107 +06 [16522] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.268 +06 [16523] ERROR:  permission denied to create database
+2026-11-25 01:34:08.268 +06 [16523] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.355 +06 [16524] ERROR:  permission denied to create database
+2026-11-25 01:34:08.355 +06 [16524] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.441 +06 [16525] ERROR:  permission denied to create database
+2026-11-25 01:34:08.441 +06 [16525] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.533 +06 [16526] ERROR:  permission denied to create database
+2026-11-25 01:34:08.533 +06 [16526] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.627 +06 [16527] ERROR:  permission denied to create database
+2026-11-25 01:34:08.627 +06 [16527] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:08.715 +06 [16528] ERROR:  permission denied to create database
+2026-11-25 01:34:08.715 +06 [16528] STATEMENT:  CREATE DATABASE "test_poms" 
+2026-11-25 01:34:31.233 +06 [15828] LOG:  checkpoint starting: immediate force wait
+2026-11-25 01:34:31.628 +06 [15828] LOG:  checkpoint complete: wrote 979 buffers (6.0%); 1 WAL file(s) added, 0 removed, 0 recycled; write=0.189 s, sync=0.101 s, total=0.396 s; sync files=309, longest=0.003 s, average=0.001 s; distance=10905 kB, estimate=10905 kB; lsn=0/1F99BD8, redo lsn=0/1F99BA0
+2026-11-25 01:34:53.482 +06 [16970] ERROR:  duplicate key value violates unique constraint "uniq_user_employee_code"
+2026-11-25 01:34:53.482 +06 [16970] DETAIL:  Key (employee_code)=(CUT-001) already exists.
+2026-11-25 01:34:53.482 +06 [16970] STATEMENT:  INSERT INTO "accounts_user" ("password", "last_login", "is_superuser", "username", "first_name", "last_name", "email", "is_staff", "is_active", "date_joined", "id", "created_at", "updated_at", "full_name", "employee_code", "role") VALUES ('md5$q4QnmWdKyD5xOERPCe1cb3$4699d6df782b1b80906b91d4a5535150', NULL, false, 'dup', '', '', '', false, true, '2026-11-24 19:34:53.481436+00:00'::timestamptz, '385c5de8b9d144e3852f8bedcdc7dceb'::uuid, '2026-11-24 19:34:53.481776+00:00'::timestamptz, '2026-11-24 19:34:53.481784+00:00'::timestamptz, 'Dup', 'CUT-001', 'CUTTING_MAN')
+2026-11-25 01:34:54.980 +06 [16970] ERROR:  new row for relation "orders_order" violates check constraint "chk_order_overall_status_consistent"
+2026-11-25 01:34:54.980 +06 [16970] DETAIL:  Failing row contains (4c28d2ef-3dc7-42d6-84ad-57f955ea5c02, 2026-11-24 19:34:54.959528+00, 2026-11-24 19:34:54.973996+00, ORD-BULK, originals/4c28d2ef-3dc7-42d6-84ad-57f955ea5c02/card.png, generated/4c28d2ef-3dc7-42d6-84ad-57f955ea5c02/order_card_f73267..., COMPLETED, PENDING, PENDING, 8947e4fa-3d0c-4b55-9c3f-56776aa2db16, 37b4e302-0f28-4acb-9c43-90694ed9798d, 069e2b68-c366-4b5c-b7dc-1070539466e6).
+2026-11-25 01:34:54.980 +06 [16970] STATEMENT:  UPDATE "orders_order" SET "cutting_status" = 'COMPLETED' WHERE "orders_order"."id" = '4c28d2ef3dc742d684ad57f955ea5c02'::uuid
+2026-11-25 01:34:55.061 +06 [16970] ERROR:  duplicate key value violates unique constraint "orders_order_order_number_key"
+2026-11-25 01:34:55.061 +06 [16970] DETAIL:  Key (order_number)=(ORD-0001) already exists.
+2026-11-25 01:34:55.061 +06 [16970] STATEMENT:  INSERT INTO "orders_order" ("id", "created_at", "updated_at", "order_number", "original_image", "generated_image", "cutting_man_id", "operator_id", "cutting_status", "operator_status", "overall_status", "created_by_id") VALUES ('2dc39252451e4a2e81440d278736682e'::uuid, '2026-11-24 19:34:55.060249+00:00'::timestamptz, '2026-11-24 19:34:55.060272+00:00'::timestamptz, 'ORD-0001', 'originals/2dc39252-451e-4a2e-8144-0d278736682e/order_card.png', '', NULL, NULL, 'PENDING', 'PENDING', 'PENDING', '44976222ee1041cca703a3a5b923db36'::uuid)
+2026-11-25 01:34:57.877 +06 [16970] ERROR:  conflicting key value violates exclusion constraint "uniq_target_no_overlap"
+2026-11-25 01:34:57.877 +06 [16970] DETAIL:  Key (employee_id, period_type, daterange(start_date, end_date, '[]'::text))=(2ee89a11-1c72-475e-8f1f-f41219200264, DAILY, [2026-11-25,2026-11-26)) conflicts with existing key (employee_id, period_type, daterange(start_date, end_date, '[]'::text))=(2ee89a11-1c72-475e-8f1f-f41219200264, DAILY, [2026-11-25,2026-11-26)).
+2026-11-25 01:34:57.877 +06 [16970] STATEMENT:  INSERT INTO "targets_employeetarget" ("id", "created_at", "updated_at", "employee_id", "department", "period_type", "start_date", "end_date", "target_count", "created_by_id") VALUES ('97d8d4c6a27b473fadb8a84c7aeb4fb7'::uuid, '2026-11-24 19:34:57.876577+00:00'::timestamptz, '2026-11-24 19:34:57.876603+00:00'::timestamptz, '2ee89a111c72475e8f1ff41219200264'::uuid, 'CUTTING', 'DAILY', '2026-11-25'::date, '2026-11-25'::date, 5, '699fc5a4a4bb480a850645c5cdcb801c'::uuid)
+2026-11-25 01:34:58.709 +06 [16970] ERROR:  duplicate key value violates unique constraint "uniq_completion_credit_employee_order_target"
+2026-11-25 01:34:58.709 +06 [16970] DETAIL:  Key (employee_id, order_id, target_id)=(e8bcf990-b6b0-4675-910e-4a6c07f1c1ca, d4394f04-8f6f-48af-a5e7-bd925130352d, 20a51533-7db5-4c27-993d-52586620af21) already exists.
+2026-11-25 01:34:58.709 +06 [16970] STATEMENT:  INSERT INTO "targets_completioncredit" ("id", "created_at", "updated_at", "employee_id", "order_id", "target_id", "department", "credit_date", "notes") VALUES ('7632260f2a37430badf2e14442f409b0'::uuid, '2026-11-24 19:34:58.708679+00:00'::timestamptz, '2026-11-24 19:34:58.708690+00:00'::timestamptz, 'e8bcf990b6b04675910e4a6c07f1c1ca'::uuid, 'd4394f048f6f48afa5e7bd925130352d'::uuid, '20a515337db54c27993d52586620af21'::uuid, 'CUTTING', '2026-11-01'::date, '')
+2026-11-25 01:34:59.796 +06 [15828] LOG:  checkpoint starting: immediate force wait
+2026-11-25 01:34:59.840 +06 [15828] LOG:  checkpoint complete: wrote 84 buffers (0.5%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.009 s, sync=0.012 s, total=0.045 s; sync files=26, longest=0.002 s, average=0.001 s; distance=6869 kB, estimate=10501 kB; lsn=0/264F160, redo lsn=0/264F128
+2026-11-25 01:39:59.943 +06 [15828] LOG:  checkpoint starting: time
+2026-11-25 01:40:04.927 +06 [15828] LOG:  checkpoint complete: wrote 50 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.956 s, sync=0.012 s, total=4.984 s; sync files=19, longest=0.004 s, average=0.001 s; distance=207 kB, estimate=9472 kB; lsn=0/2683080, redo lsn=0/2683048
