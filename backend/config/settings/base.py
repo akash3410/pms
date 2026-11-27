@@ -85,6 +85,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     # Local apps
     "apps.accounts",
+    "apps.rbac",
+    "apps.audit",
     "apps.orders",
     "apps.production",
     "apps.targets",
@@ -186,8 +188,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    # Every endpoint requires an authenticated, active account unless it opts
+    # out explicitly (login, refresh, password reset, invitation acceptance).
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
+        "apps.accounts.permissions.IsActiveUser",
     ),
     "DEFAULT_PAGINATION_CLASS": "common.pagination.StandardResultsSetPagination",
     "PAGE_SIZE": env_int("PAGE_SIZE", default=20),
@@ -221,6 +226,36 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
+# --------------------------------------------------------------------------- #
+# Email / links
+# --------------------------------------------------------------------------- #
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@poms.local")
+# Base URL used in invitation / password-reset links.
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
+# Invitation lifetime is configurable by a superuser through the API, bounded
+# by a hard maximum of 7 days in apps.accounts.services.
+INVITATION_EXPIRY_HOURS = env_int("INVITATION_EXPIRY_HOURS", default=72)
+
+
+def _dev_email_backend() -> str:
+    """Console backend in development, SMTP (DB-configurable) otherwise."""
+    return env(
+        "EMAIL_BACKEND",
+        default="django.core.mail.backends.console.EmailBackend"
+        if DEBUG
+        else "django.core.mail.backends.smtp.EmailBackend",
+    )
+
+
+EMAIL_BACKEND = _dev_email_backend()
+EMAIL_HOST = env("EMAIL_HOST", default="localhost")
+EMAIL_PORT = env_int("EMAIL_PORT", default=25)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=False)
+EMAIL_TIMEOUT = env_int("EMAIL_TIMEOUT", default=10)
+
+# --------------------------------------------------------------------------- #
 # drf-spectacular (OpenAPI / Swagger)
 SPECTACULAR_SETTINGS = {
     "TITLE": "Production Order Management System (POMS) API",
@@ -232,11 +267,13 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/v1",
     # Deterministic enum component names (avoids auto-collisions).
     "ENUM_NAME_OVERRIDES": {
-        "Department": "common.enums.Department.choices",
-        "NoteDepartment": "common.enums.NoteDepartment.choices",
-        "ProductionStatus": "common.enums.ProductionStatus.choices",
-        "OverallStatus": "common.enums.OverallStatus.choices",
-        "PeriodType": "common.enums.PeriodType.choices",
+        # ``*Enum`` suffix avoids colliding with the RBAC ``Department`` model
+        # serializer component names.
+        "DepartmentEnum": "common.enums.Department.choices",
+        "NoteDepartmentEnum": "common.enums.NoteDepartment.choices",
+        "ProductionStatusEnum": "common.enums.ProductionStatus.choices",
+        "OverallStatusEnum": "common.enums.OverallStatus.choices",
+        "PeriodTypeEnum": "common.enums.PeriodType.choices",
     },
 }
 

@@ -1,4 +1,9 @@
-"""Read-only reporting endpoints (admin only)."""
+"""Read-only reporting endpoints, gated by ``reports.view_reports``.
+
+Reporting aggregates are derived from data (department memberships and role
+assignments) rather than from a fixed role constant, so new roles and
+departments appear automatically.
+"""
 from django.db.models import Count
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiTypes, extend_schema
@@ -6,16 +11,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.models import Role, User
-from apps.accounts.permissions import IsAdmin
+from apps.accounts.models import User
+from apps.accounts.permissions import IsActiveUser
 from apps.orders.models import Order
 from apps.orders.serializers import OrderSerializer
+from apps.rbac.models import DepartmentMembership, UserRole
+from apps.rbac.permissions import RBACPermission
 from apps.targets.models import CompletionCredit, EmployeeTarget
 from common.enums import OverallStatus, ProductionStatus
 
-# Reports can grow with the dataset; bound list-style reports so a single request
-# never materialises an unbounded queryset (POMS-AUDIT-017). Clients page with
-# ``?limit=`` (default 100, max 500) and ``?offset=``.
 DEFAULT_REPORT_LIMIT = 100
 MAX_REPORT_LIMIT = 500
 
@@ -34,10 +38,39 @@ def _apply_limit(queryset, request):
     return queryset[offset : offset + limit]
 
 
-class DashboardView(APIView):
-    """High-level dashboard statistics."""
+def _production_employee_ids():
+    """Users with a live membership in an active production department."""
+    return DepartmentMembership.objects.filter(
+        ended_at__isnull=True,
+        department__is_active=True,
+        department__is_production=True,
+    ).values("user_id")
 
-    permission_classes = [IsAuthenticated, IsAdmin]
+
+def _production_employees():
+    return User.objects.filter(pk__in=_production_employee_ids())
+
+
+def _role_counts() -> dict:
+    rows = (
+        UserRole.objects.filter(
+            revoked_at__isnull=True,
+            role__is_active=True,
+            user__is_active=True,
+        )
+        .values("role__code")
+        .annotate(count=Count("user_id", distinct=True))
+    )
+    return {row["role__code"]: row["count"] for row in rows}
+
+
+class ReportBaseView(APIView):
+    permission_classes = [IsAuthenticated, IsActiveUser, RBACPermission]
+    required_permission = "reports.view_reports"
+
+
+class DashboardView(ReportBaseView):
+    """High-level dashboard statistics."""
 
     @extend_schema(responses={200: OpenApiTypes.OBJECT})
     def get(self, request):
@@ -46,9 +79,6 @@ class DashboardView(APIView):
             for row in Order.objects.values("overall_status").annotate(count=Count("id"))
         }
         today = timezone.localdate()
-        # "Completed today" = orders whose overall completion (the last department
-        # reaching COMPLETED) happened today, derived from the actual status-history
-        # timestamps rather than the generic updated_at (POMS-AUDIT-013).
         orders_completed_today = (
             Order.objects.filter(
                 overall_status=OverallStatus.COMPLETED,
@@ -58,22 +88,34 @@ class DashboardView(APIView):
             .distinct()
             .count()
         )
+        employees_by_department = {
+            row["department__code"]: row["count"]
+            for row in DepartmentMembership.objects.filter(
+                ended_at__isnull=True,
+                department__is_active=True,
+                user__is_active=True,
+            )
+            .values("department__code")
+            .annotate(count=Count("user_id", distinct=True))
+        }
         return Response(
             {
                 "orders_total": Order.objects.count(),
                 "orders_by_status": by_status,
                 "orders_completed_today": orders_completed_today,
-                "active_employees": User.objects.filter(
-                    is_active=True, role__in=[Role.CUTTING_MAN, Role.OPERATOR]
-                ).count(),
-                "employees_by_role": {
-                    role: User.objects.filter(role=role, is_active=True).count()
-                    for role in [Role.ADMIN, Role.CUTTING_MAN, Role.OPERATOR]
-                },
+                "active_employees": _production_employees()
+                .filter(is_active=True)
+                .distinct()
+                .count(),
+                # Data-driven counts (key retained for API compatibility).
+                "employees_by_role": _role_counts(),
+                "employees_by_department": employees_by_department,
                 "targets_total": EmployeeTarget.objects.count(),
                 "completion_credits_total": CompletionCredit.objects.count(),
                 "recent_orders": OrderSerializer(
-                    Order.objects.select_related("cutting_man", "operator", "created_by")[:5],
+                    Order.objects.select_related(
+                        "cutting_man", "operator", "created_by"
+                    )[:5],
                     many=True,
                     context={"request": request},
                 ).data,
@@ -81,17 +123,13 @@ class DashboardView(APIView):
         )
 
 
-class EmployeePerformanceView(APIView):
+class EmployeePerformanceView(ReportBaseView):
     """Per-employee assignment load and completion credits."""
-
-    permission_classes = [IsAuthenticated, IsAdmin]
 
     @extend_schema(responses={200: OpenApiTypes.OBJECT})
     def get(self, request):
         employees = _apply_limit(
-            User.objects.filter(
-                role__in=[Role.CUTTING_MAN, Role.OPERATOR]
-            )
+            _production_employees()
             .annotate(
                 cutting_assigned=Count("cutting_orders", distinct=True),
                 operator_assigned=Count("operator_orders", distinct=True),
@@ -118,10 +156,8 @@ class EmployeePerformanceView(APIView):
         return Response(data)
 
 
-class ProductionReportView(APIView):
+class ProductionReportView(ReportBaseView):
     """Production status distribution and throughput."""
-
-    permission_classes = [IsAuthenticated, IsAdmin]
 
     @extend_schema(responses={200: OpenApiTypes.OBJECT})
     def get(self, request):
@@ -146,10 +182,8 @@ class ProductionReportView(APIView):
         )
 
 
-class TargetsReportView(APIView):
+class TargetsReportView(ReportBaseView):
     """Target achievement across all configured targets."""
-
-    permission_classes = [IsAuthenticated, IsAdmin]
 
     @extend_schema(responses={200: OpenApiTypes.OBJECT})
     def get(self, request):

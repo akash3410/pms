@@ -3,32 +3,30 @@ from datetime import date
 
 from django.db import transaction
 
-from apps.accounts.models import Role, User
+from apps.accounts.models import User
 from apps.orders.models import Order
+from apps.rbac.models import DepartmentMembership
 from common.enums import Department
 from common.exceptions import BusinessRuleError
 
 from .models import CompletionCredit, EmployeeTarget
 
-_DEPARTMENT_FOR_ROLE = {
-    Role.CUTTING_MAN: Department.CUTTING,
-    Role.OPERATOR: Department.OPERATOR,
-}
-
 
 def validate_target_department(employee, department: str) -> None:
-    """A target's department must match the employee's production role."""
-    expected = _DEPARTMENT_FOR_ROLE.get(employee.role)
-    if expected is None:
-        raise BusinessRuleError(
-            {"department": "Targets can only be set for production employees."}
-        )
-    if department != expected:
+    """A target's department must be one the employee actually belongs to."""
+    if department not in Department.values:
+        raise BusinessRuleError({"department": "Unknown department."})
+    if not DepartmentMembership.objects.filter(
+        user=employee,
+        department__code=department,
+        department__is_active=True,
+        ended_at__isnull=True,
+    ).exists():
         raise BusinessRuleError(
             {
                 "department": (
-                    f"Department must match the employee's role "
-                    f"({expected.replace('_', ' ').title()})."
+                    "Targets can only be set for employees who belong to that "
+                    "department."
                 )
             }
         )

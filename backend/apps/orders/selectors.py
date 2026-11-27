@@ -1,21 +1,25 @@
 """Reusable, optimised read queries for orders."""
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 
-from apps.accounts.models import Role
+from apps.rbac.access import EffectiveAccess
 
 from .models import Order
 
 
 def orders_for_user(user) -> QuerySet[Order]:
-    """Orders visible to ``user``.
+    """Orders visible to ``user``, according to their ``orders.view_order`` scope.
 
-    - ADMIN: all orders.
-    - Employee: only orders where they are the *current* Cutting Man or Operator.
+    - ``ALL``            : every order.
+    - ``ASSIGNED``       : orders where the user is the *current* assignee.
+    - ``CREATED_BY_ME``  : orders the user created.
+    - ``DEPARTMENT``     : orders assigned to members of the user's departments.
+
+    Filtering happens in SQL (never in Python) so pagination and ``get_object()``
+    are both safe. A user-level restriction is applied as an additional ``AND``
+    filter and can therefore only narrow the result.
     """
     base = Order.objects.select_related("cutting_man", "operator", "created_by")
-    if user.role == Role.ADMIN:
-        return base
-    return base.filter(Q(cutting_man=user) | Q(operator=user))
+    return EffectiveAccess(user).filter_queryset("orders.view_order", base)
 
 
 def order_assignments(order: Order) -> QuerySet:

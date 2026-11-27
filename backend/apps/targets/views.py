@@ -5,7 +5,9 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.accounts.permissions import IsAdmin
+from apps.accounts.permissions import IsActiveUser
+from apps.rbac.access import get_access
+from apps.rbac.permissions import RBACPermission
 
 from .models import EmployeeTarget
 from .serializers import EmployeeTargetSerializer, EmployeeTargetWriteSerializer
@@ -25,11 +27,29 @@ class EmployeeTargetViewSet(viewsets.ModelViewSet):
         .annotate(achieved_count=Count("credits"))
         .order_by("-start_date")
     )
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsActiveUser, RBACPermission]
+    permission_map = {
+        "list": "targets.view_targets",
+        "retrieve": "targets.view_targets",
+        "create": "targets.manage_targets",
+        "update": "targets.manage_targets",
+        "partial_update": "targets.manage_targets",
+    }
     http_method_names = ["get", "post", "patch", "head", "options"]
     filterset_fields = ["employee", "department", "period_type"]
     ordering_fields = ["start_date", "end_date", "created_at"]
     ordering = ["-start_date"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if getattr(self, "swagger_fake_view", False):
+            return queryset.none()
+        key = (
+            "targets.view_targets"
+            if self.action in {"list", "retrieve"}
+            else "targets.manage_targets"
+        )
+        return get_access(self.request).filter_queryset(key, queryset)
 
     def get_serializer_class(self):
         if self.action in {"create", "update", "partial_update"}:

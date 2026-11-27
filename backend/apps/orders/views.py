@@ -10,8 +10,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.accounts.models import Role
-from apps.accounts.permissions import IsAdmin
+from apps.accounts.permissions import IsActiveUser
 from apps.production.selectors import order_notes, order_status_history
 from apps.production.serializers import (
     OrderNoteCreateSerializer,
@@ -21,9 +20,11 @@ from apps.production.serializers import (
 )
 from apps.production.services import (
     add_order_note,
-    department_for_role,
+    departments_for_user_on_order,
     update_department_status,
 )
+from apps.rbac.access import get_access
+from apps.rbac.permissions import RBACPermission
 from common.exceptions import BusinessRuleError
 
 from .models import Order
@@ -47,7 +48,21 @@ class OrderViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActiveUser, RBACPermission]
+    permission_map = {
+        "list": "orders.view_order",
+        "retrieve": "orders.view_order",
+        "create": "orders.create_order",
+        "update": "orders.edit_order",
+        "partial_update": "orders.edit_order",
+        "assign": "orders.assign_order",
+        "assignments": "orders.view_assignments",
+        "original_image": "orders.view_media",
+        "generated_image": "orders.view_media",
+        "order_status": "production.update_status",
+        "history": "production.view_status_history",
+        "notes": {"GET": "orders.view_notes", "POST": "orders.create_note"},
+    }
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     http_method_names = ["get", "post", "patch", "head", "options"]
     filterset_fields = ["overall_status", "cutting_status", "operator_status"]
@@ -66,11 +81,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         if getattr(self, "swagger_fake_view", False):
             return Order.objects.none()
         return orders_for_user(self.request.user)
-
-    def get_permissions(self):
-        if self.action in {"create", "update", "partial_update", "assign"}:
-            return [IsAuthenticated(), IsAdmin()]
-        return [IsAuthenticated()]
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -115,7 +125,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["patch"],
         url_path="assign",
-        permission_classes=[IsAuthenticated, IsAdmin],
     )
     def assign(self, request, pk=None):
         order = self.get_object()
@@ -196,21 +205,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         user = request.user
+        access = get_access(request)
+        department = data.get("department")
 
-        if user.role == Role.ADMIN:
-            department = data.get("department")
+        if access.has_scope("production.update_status", "ALL"):
+            # Administrators may act on either department but must say which.
             if not department:
                 return Response(
                     {"detail": {"department": "Admin must specify a department."}},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
-            department = department_for_role(user.role)
-            if department is None:
+            # Employees act only on departments they are currently assigned to.
+            owned = departments_for_user_on_order(order, user)
+            if not owned:
                 return Response(
                     {"detail": "Your role cannot update production status."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
+            department = department if department in owned else owned[0]
 
         try:
             order = update_department_status(

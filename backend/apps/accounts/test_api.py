@@ -145,7 +145,7 @@ class TestEmployeeManagementRBAC:
             "/api/v1/employees/",
             {
                 "username": "newop",
-                "password": "Password12345",
+                "password": "Str0ng-Prov1sion!",
                 "full_name": "New Operator",
                 "employee_code": "OPR-100",
                 "role": Role.OPERATOR,
@@ -158,7 +158,7 @@ class TestEmployeeManagementRBAC:
     def test_employee_cannot_create_employee(self, cutting_user):
         resp = auth_client(cutting_user).post(
             "/api/v1/employees/",
-            {"username": "x", "password": "Password12345", "full_name": "X", "employee_code": "X1"},
+            {"username": "x", "password": "Str0ng-Prov1sion!", "full_name": "X", "employee_code": "X1"},
             format="json",
         )
         assert resp.status_code == 403
@@ -176,7 +176,7 @@ class TestEmployeeManagementRBAC:
             "/api/v1/employees/",
             {
                 "username": "dup2",
-                "password": "Password12345",
+                "password": "Str0ng-Prov1sion!",
                 "full_name": "Dup",
                 "employee_code": "OPR-001",
                 "role": Role.OPERATOR,
@@ -218,7 +218,7 @@ class TestEmployeeMethodRestrictions:
             "/api/v1/employees/",
             {
                 "username": "stillworks",
-                "password": "Password12345",
+                "password": "Str0ng-Prov1sion!",
                 "full_name": "Still Works",
                 "employee_code": "OPR-777",
                 "role": Role.OPERATOR,
