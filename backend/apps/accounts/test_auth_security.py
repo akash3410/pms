@@ -78,11 +78,11 @@ class TestEmailAuthentication:
         assert login("operator1", "Operator12345!").status_code == 401
 
     def test_login_is_rate_limited(self, admin_user):
-        for _ in range(5):
+        for _ in range(15):
             assert login("admin1", "wrong-password").status_code == 401
         resp = login("admin1", "wrong-password")
         assert resp.status_code == 429
-        assert LoginAttempt.objects.filter(successful=False).count() >= 5
+        assert LoginAttempt.objects.filter(successful=False).count() >= 15
 
 
 class TestPasswordLifecycle:

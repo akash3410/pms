@@ -20,7 +20,7 @@ from .models import LoginAttempt
 
 GENERIC_AUTH_ERROR = "Invalid credentials."
 
-LOGIN_MAX_ATTEMPTS = 5
+LOGIN_MAX_ATTEMPTS = 15
 LOGIN_WINDOW = timedelta(minutes=15)
 LOGIN_LOCKOUT = timedelta(minutes=15)
 
