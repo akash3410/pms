@@ -1,1 +1,1 @@
-/usr/lib/postgresql/16/bin/postgres "-D" "pgdata" "-p" "55432" "-k" "/tmp"
+/usr/lib/postgresql/16/bin/postgres "-D" "pgdata" "-p" "55432"
